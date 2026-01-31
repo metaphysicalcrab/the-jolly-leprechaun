@@ -1,0 +1,75 @@
+[gd_scene load_steps=12 format=3 uid="uid://birdenemy_main"]
+
+[ext_resource type="Script" path="res://Scripts/Entities/Enemies/BirdEnemy.cs" id="1_enemy"]
+[ext_resource type="Script" path="res://Scripts/Components/StateMachine/StateMachine.cs" id="2_statemachine"]
+[ext_resource type="Script" path="res://Scripts/Components/StateMachine/States/EnemyIdleState.cs" id="3_idle"]
+[ext_resource type="Script" path="res://Scripts/Components/StateMachine/States/EnemyPatrolState.cs" id="4_patrol"]
+[ext_resource type="Script" path="res://Scripts/Components/StateMachine/States/EnemyChaseState.cs" id="5_chase"]
+[ext_resource type="Script" path="res://Scripts/Components/StateMachine/States/EnemyScaredState.cs" id="6_scared"]
+[ext_resource type="Script" path="res://Scripts/Components/DetectionComponent.cs" id="7_detection"]
+[ext_resource type="Resource" path="res://Resources/Characters/bird_enemy_data.tres" id="8_data"]
+[ext_resource type="PackedScene" path="res://Assets/Models/bird_character.glb" id="9_model"]
+[ext_resource type="Script" path="res://Scripts/Entities/Enemies/EnemyAnimator.cs" id="10_animator"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
+radius = 0.4
+height = 1.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_detection"]
+radius = 12.0
+
+[node name="BirdEnemy" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1_enemy")
+Data = ExtResource("8_data")
+_stateMachinePath = NodePath("StateMachine")
+_navAgentPath = NodePath("NavigationAgent3D")
+_modelPath = NodePath("Model")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_1")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="BirdModel" parent="Model" instance=ExtResource("9_model")]
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.5
+target_desired_distance = 0.5
+
+[node name="DetectionArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("7_detection")
+_detectionRange = 12.0
+_detectionAngle = 150.0
+_enemy = NodePath("..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DetectionArea"]
+shape = SubResource("SphereShape3D_detection")
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("2_statemachine")
+
+[node name="IdleState" type="Node" parent="StateMachine"]
+script = ExtResource("3_idle")
+_enemyPath = NodePath("../..")
+
+[node name="PatrolState" type="Node" parent="StateMachine"]
+script = ExtResource("4_patrol")
+_enemyPath = NodePath("../..")
+
+[node name="ChaseState" type="Node" parent="StateMachine"]
+script = ExtResource("5_chase")
+_enemyPath = NodePath("../..")
+
+[node name="ScaredState" type="Node" parent="StateMachine"]
+script = ExtResource("6_scared")
+_enemyPath = NodePath("../..")
+
+[node name="EnemyAnimator" type="Node" parent="."]
+script = ExtResource("10_animator")
+_enemyPath = NodePath("..")
+_stateMachinePath = NodePath("../StateMachine")

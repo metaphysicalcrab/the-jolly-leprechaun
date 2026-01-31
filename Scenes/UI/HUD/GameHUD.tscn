@@ -1,0 +1,50 @@
+[gd_scene load_steps=2 format=3 uid="uid://gamehud_main"]
+
+[ext_resource type="Script" path="res://Scripts/UI/GameHUD.cs" id="1_hud"]
+
+[node name="GameHUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -100.0
+offset_right = 220.0
+offset_bottom = -20.0
+grow_vertical = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="ScareCooldown" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ScareCooldown"]
+layout_mode = 2
+text = "Scare: Ready [E]"
+
+[node name="ProgressBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/ScareCooldown"]
+custom_minimum_size = Vector2(180, 20)
+layout_mode = 2
+value = 100.0
+show_percentage = false
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -150.0
+offset_bottom = -100.0
+grow_vertical = 0
+
+[node name="InteractionPrompt" type="PanelContainer" parent="CenterContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/InteractionPrompt"]
+layout_mode = 2
+text = "Press [F] to hide"
+horizontal_alignment = 1

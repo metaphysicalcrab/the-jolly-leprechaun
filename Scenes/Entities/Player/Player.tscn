@@ -1,0 +1,79 @@
+[gd_scene load_steps=10 format=3 uid="uid://player_main"]
+
+[ext_resource type="Script" path="res://Scripts/Entities/Player/PlayerController.cs" id="1_controller"]
+[ext_resource type="Script" path="res://Scripts/Entities/Player/PlayerMovement.cs" id="2_movement"]
+[ext_resource type="Script" path="res://Scripts/Entities/Player/PlayerCamera.cs" id="3_camera"]
+[ext_resource type="Script" path="res://Scripts/Entities/Player/PlayerScare.cs" id="4_scare"]
+[ext_resource type="Script" path="res://Scripts/Entities/Player/PlayerHiding.cs" id="5_hiding"]
+[ext_resource type="Script" path="res://Scripts/Entities/Player/PlayerAnimator.cs" id="6_animator"]
+[ext_resource type="PackedScene" path="res://Assets/Models/leprechaun_game.glb" id="7_model"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
+radius = 0.4
+height = 1.2
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_scare"]
+radius = 4.0
+
+[node name="Player" type="CharacterBody3D" groups=["Player"]]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_controller")
+_movementPath = NodePath("PlayerMovement")
+_modelPath = NodePath("Model")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("CapsuleShape3D_1")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="LeprechaunModel" parent="Model" instance=ExtResource("7_model")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="PlayerMovement" type="Node" parent="."]
+script = ExtResource("2_movement")
+_bodyPath = NodePath("..")
+_cameraPivotPath = NodePath("../CameraPivot")
+_modelPath = NodePath("../Model")
+
+[node name="PlayerAnimator" type="Node" parent="."]
+script = ExtResource("6_animator")
+_bodyPath = NodePath("..")
+_movementPath = NodePath("../PlayerMovement")
+
+[node name="PlayerScare" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("4_scare")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerScare"]
+shape = SubResource("SphereShape3D_scare")
+
+[node name="PlayerHiding" type="Node" parent="."]
+script = ExtResource("5_hiding")
+_playerPath = NodePath("..")
+_movementPath = NodePath("../PlayerMovement")
+_interactionRayPath = NodePath("../InteractionRayCast")
+
+[node name="CameraPivot" type="Node3D" parent="."]
+script = ExtResource("3_camera")
+_targetPath = NodePath("..")
+_offset = Vector3(0, 1.5, 0)
+_springArmPath = NodePath("SpringArm3D")
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+collision_mask = 1
+spring_length = 5.0
+margin = 0.3
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot/SpringArm3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+current = true
+fov = 70.0
+
+[node name="InteractionRayCast" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+target_position = Vector3(0, 0, -2)
+collision_mask = 4

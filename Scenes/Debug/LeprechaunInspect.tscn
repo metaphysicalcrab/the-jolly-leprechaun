@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://Assets/Models/leprechaun_game.glb" id="1_model"]
+
+[node name="LeprechaunInspect" instance=ExtResource("1_model")]

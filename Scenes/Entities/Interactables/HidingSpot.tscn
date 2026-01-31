@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://hidingspot_main"]
+
+[ext_resource type="Script" path="res://Scripts/Entities/Interactables/HidingSpot.cs" id="1_hidingspot"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bush"]
+albedo_color = Color(0.2, 0.5, 0.15, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_bush"]
+radius = 0.8
+height = 1.2
+
+[node name="HidingSpot" type="Area3D"]
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("1_hidingspot")
+_hiddenPosition = NodePath("HiddenPosition")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_trigger")
+
+[node name="BushMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+mesh = SubResource("SphereMesh_bush")
+surface_material_override/0 = SubResource("StandardMaterial3D_bush")
+
+[node name="HiddenPosition" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)

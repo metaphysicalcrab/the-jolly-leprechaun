@@ -1,0 +1,172 @@
+[gd_scene load_steps=16 format=3 uid="uid://testlevel_main"]
+
+[ext_resource type="PackedScene" uid="uid://player_main" path="res://Scenes/Entities/Player/Player.tscn" id="1_player"]
+[ext_resource type="PackedScene" uid="uid://birdenemy_main" path="res://Scenes/Entities/Enemies/BirdEnemy.tscn" id="2_bird"]
+[ext_resource type="PackedScene" uid="uid://humanoidenemy_main" path="res://Scenes/Entities/Enemies/HumanoidEnemy.tscn" id="3_humanoid"]
+[ext_resource type="PackedScene" uid="uid://hidingspot_main" path="res://Scenes/Entities/Interactables/HidingSpot.tscn" id="4_hidingspot"]
+[ext_resource type="PackedScene" uid="uid://gamehud_main" path="res://Scenes/UI/HUD/GameHUD.tscn" id="5_hud"]
+[ext_resource type="PackedScene" uid="uid://pausemenu_main" path="res://Scenes/UI/Menus/PauseMenu.tscn" id="6_pause"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
+sky_top_color = Color(0.4, 0.6, 0.9, 1)
+sky_horizon_color = Color(0.7, 0.8, 0.95, 1)
+ground_bottom_color = Color(0.2, 0.3, 0.15, 1)
+ground_horizon_color = Color(0.5, 0.6, 0.4, 1)
+sun_angle_max = 30.0
+
+[sub_resource type="Sky" id="Sky_1"]
+sky_material = SubResource("ProceduralSkyMaterial_1")
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 2
+sky = SubResource("Sky_1")
+ambient_light_source = 2
+ambient_light_color = Color(0.9, 0.9, 0.95, 1)
+ambient_light_sky_contribution = 0.5
+ambient_light_energy = 0.3
+tonemap_mode = 2
+ssao_enabled = true
+ssao_radius = 2.0
+ssao_intensity = 1.5
+glow_enabled = true
+glow_intensity = 0.3
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_1"]
+agent_radius = 0.4
+agent_height = 1.5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(50, 1, 50)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
+albedo_color = Color(0.3, 0.5, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ground"]
+size = Vector3(50, 1, 50)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_platform"]
+size = Vector3(4, 0.5, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_platform"]
+albedo_color = Color(0.5, 0.4, 0.3, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_platform"]
+size = Vector3(4, 0.5, 4)
+
+[node name="TestLevel" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.433, 0.25, 0, 0.5, 0.866, -0.5, -0.75, 0.433, 10, 20, 10)
+light_color = Color(1, 0.98, 0.9, 1)
+light_energy = 1.2
+shadow_enabled = true
+shadow_opacity = 0.8
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_1")
+
+[node name="Ground" type="StaticBody3D" parent="NavigationRegion3D"]
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_ground")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("BoxMesh_ground")
+surface_material_override/0 = SubResource("StandardMaterial3D_ground")
+
+[node name="Platform1" type="StaticBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.25, 0)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Platform1"]
+shape = SubResource("BoxShape3D_platform")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/Platform1"]
+mesh = SubResource("BoxMesh_platform")
+surface_material_override/0 = SubResource("StandardMaterial3D_platform")
+
+[node name="Platform2" type="StaticBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.25, 5)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Platform2"]
+shape = SubResource("BoxShape3D_platform")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/Platform2"]
+mesh = SubResource("BoxMesh_platform")
+surface_material_override/0 = SubResource("StandardMaterial3D_platform")
+
+[node name="Platform3" type="StaticBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, -10)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Platform3"]
+shape = SubResource("BoxShape3D_platform")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/Platform3"]
+mesh = SubResource("BoxMesh_platform")
+surface_material_override/0 = SubResource("StandardMaterial3D_platform")
+
+[node name="Entities" type="Node3D" parent="."]
+
+[node name="Player" parent="Entities" instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Enemies" type="Node3D" parent="Entities"]
+
+[node name="BirdEnemy1" parent="Entities/Enemies" instance=ExtResource("2_bird")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 8)
+PatrolPoints = [NodePath("../../PatrolPoints/BirdPoint1"), NodePath("../../PatrolPoints/BirdPoint2"), NodePath("../../PatrolPoints/BirdPoint3")]
+
+[node name="HumanoidEnemy1" parent="Entities/Enemies" instance=ExtResource("3_humanoid")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -8)
+PatrolPoints = [NodePath("../../PatrolPoints/HumanPoint1"), NodePath("../../PatrolPoints/HumanPoint2"), NodePath("../../PatrolPoints/HumanPoint3"), NodePath("../../PatrolPoints/HumanPoint4")]
+
+[node name="Interactables" type="Node3D" parent="Entities"]
+
+[node name="Bush1" parent="Entities/Interactables" instance=ExtResource("4_hidingspot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 3)
+
+[node name="Bush2" parent="Entities/Interactables" instance=ExtResource("4_hidingspot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -3)
+
+[node name="Bush3" parent="Entities/Interactables" instance=ExtResource("4_hidingspot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
+
+[node name="Bush4" parent="Entities/Interactables" instance=ExtResource("4_hidingspot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -12)
+
+[node name="PatrolPoints" type="Node3D" parent="Entities"]
+
+[node name="BirdPoint1" type="Marker3D" parent="Entities/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 8)
+
+[node name="BirdPoint2" type="Marker3D" parent="Entities/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -8)
+
+[node name="BirdPoint3" type="Marker3D" parent="Entities/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8)
+
+[node name="HumanPoint1" type="Marker3D" parent="Entities/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -8)
+
+[node name="HumanPoint2" type="Marker3D" parent="Entities/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 8)
+
+[node name="HumanPoint3" type="Marker3D" parent="Entities/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 8)
+
+[node name="HumanPoint4" type="Marker3D" parent="Entities/PatrolPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -8)
+
+[node name="UI" type="Node" parent="."]
+
+[node name="GameHUD" parent="UI" instance=ExtResource("5_hud")]
+
+[node name="PauseMenu" parent="UI" instance=ExtResource("6_pause")]

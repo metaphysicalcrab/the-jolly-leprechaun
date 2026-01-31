@@ -1,0 +1,18 @@
+# Godot
+.godot/
+*.import
+/android/
+
+# .NET
+bin/
+obj/
+*.user
+
+# IDE
+.vs/
+.idea/
+*.sln.DotSettings.user
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Data/EnemyData.cs" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+WalkSpeed = 3.0
+ChaseSpeed = 6.0
+FleeSpeed = 8.0
+RotationSpeed = 5.0
+DetectionRange = 12.0
+DetectionAngle = 50.0
+LoseTargetTime = 3.0
+ScareThreshold = 0.5
+ScareRecoveryTime = 5.0
+IdleDuration = 2.0
+PatrolWaitTime = 1.5
