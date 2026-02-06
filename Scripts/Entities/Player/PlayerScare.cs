@@ -15,10 +15,14 @@ public partial class PlayerScare : Area3D
     [Export] private float _scareCooldown = 2.0f;
     [Export] private float _scareRadius = 4.0f;
 
+    [ExportGroup("References")]
+    [Export] private NodePath _animatorPath = "../PlayerAnimator";
+
     [Signal] public delegate void ScareCooldownStartedEventHandler(float duration);
     [Signal] public delegate void ScareCooldownEndedEventHandler();
     [Signal] public delegate void ScareUsedEventHandler(int enemiesScared);
 
+    private PlayerAnimator? _animator;
     private bool _canScare = true;
     private float _cooldownRemaining;
     private bool _enabled = true;
@@ -35,6 +39,8 @@ public partial class PlayerScare : Area3D
 
     public override void _Ready()
     {
+        _animator = GetNodeOrNull<PlayerAnimator>(_animatorPath);
+
         // Configure the collision shape radius if we have one
         var shape = GetNodeOrNull<CollisionShape3D>("CollisionShape3D");
         if (shape?.Shape is SphereShape3D sphere)
@@ -90,7 +96,8 @@ public partial class PlayerScare : Area3D
 
         EmitSignal(SignalName.ScareUsed, scaredCount);
 
-        // Visual/audio feedback would go here
+        _animator?.PlayActionAnimation("scare");
+
         GD.Print($"Scare used! Scared {scaredCount} enemies.");
 
         return true;

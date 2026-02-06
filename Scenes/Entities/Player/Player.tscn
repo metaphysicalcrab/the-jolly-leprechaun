@@ -46,6 +46,7 @@ _movementPath = NodePath("../PlayerMovement")
 collision_layer = 0
 collision_mask = 4
 script = ExtResource("4_scare")
+_animatorPath = NodePath("../PlayerAnimator")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerScare"]
 shape = SubResource("SphereShape3D_scare")

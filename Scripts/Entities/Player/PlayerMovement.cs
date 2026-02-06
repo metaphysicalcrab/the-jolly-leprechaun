@@ -15,6 +15,13 @@ public partial class PlayerMovement : Node
     [Export] private float _jumpVelocity = 8.0f;
     [Export] private float _rotationSpeed = 10.0f;
 
+    [ExportGroup("Sneak")]
+    [Export] private float _sneakSpeed = 2.5f;
+
+    [ExportGroup("Double Jump")]
+    [Export] private float _doubleJumpVelocity = 7.0f;
+    [Export] private int _maxJumps = 2;
+
     [ExportGroup("Physics")]
     [Export] private float _gravity = 20.0f;
     [Export] private float _acceleration = 15.0f;
@@ -31,12 +38,18 @@ public partial class PlayerMovement : Node
     private Node3D? _model;
     private bool _enabled = true;
     private bool _wasOnFloor;
+    private bool _isSneaking;
+    private int _jumpCount;
 
     [Signal] public delegate void JumpedEventHandler();
     [Signal] public delegate void LandedEventHandler();
+    [Signal] public delegate void SneakToggledEventHandler(bool isSneaking);
+    [Signal] public delegate void DoubleJumpedEventHandler();
 
     public bool IsEnabled => _enabled;
     public float MoveSpeed => _moveSpeed;
+    public bool IsSneaking => _isSneaking;
+    public int JumpCount => _jumpCount;
 
     public override void _Ready()
     {
@@ -80,9 +93,17 @@ public partial class PlayerMovement : Node
             GD.Print($"[Movement] pos={_body.GlobalPosition}, vel={velocity}, onFloor={onFloor}, input={debugInput}, InputMgr={InputManager.Instance != null}");
         }
 
+        // Sneak toggle
+        if (InputManager.Instance?.IsSneakJustPressed() == true && onFloor)
+        {
+            _isSneaking = !_isSneaking;
+            EmitSignal(SignalName.SneakToggled, _isSneaking);
+        }
+
         // Landing detection
         if (onFloor && !_wasOnFloor)
         {
+            _jumpCount = 0;
             EmitSignal(SignalName.Landed);
         }
         _wasOnFloor = onFloor;
@@ -93,20 +114,38 @@ public partial class PlayerMovement : Node
             velocity.Y -= _gravity * (float)delta;
         }
 
-        // Jump
-        if (InputManager.Instance?.IsJumpJustPressed() == true && onFloor)
+        // Jump (supports double jump)
+        if (InputManager.Instance?.IsJumpJustPressed() == true && _jumpCount < _maxJumps)
         {
-            velocity.Y = _jumpVelocity;
-            EmitSignal(SignalName.Jumped);
+            var isDoubleJump = _jumpCount >= 1;
+            velocity.Y = isDoubleJump ? _doubleJumpVelocity : _jumpVelocity;
+            _jumpCount++;
+
+            if (isDoubleJump)
+            {
+                EmitSignal(SignalName.DoubleJumped);
+            }
+            else
+            {
+                EmitSignal(SignalName.Jumped);
+            }
         }
 
         // Get input and calculate movement direction relative to camera
         var inputDir = InputManager.Instance?.GetMovementInput() ?? Vector2.Zero;
         var direction = GetCameraRelativeDirection(inputDir);
 
-        // Calculate current speed (sprint or normal)
-        var isSprinting = InputManager.Instance?.IsSprintPressed() == true;
-        var currentSpeed = isSprinting ? _moveSpeed * _sprintMultiplier : _moveSpeed;
+        // Calculate current speed (sneak caps speed, sprint only when not sneaking)
+        float currentSpeed;
+        if (_isSneaking)
+        {
+            currentSpeed = _sneakSpeed;
+        }
+        else
+        {
+            var isSprinting = InputManager.Instance?.IsSprintPressed() == true;
+            currentSpeed = isSprinting ? _moveSpeed * _sprintMultiplier : _moveSpeed;
+        }
 
         // Apply movement
         var currentAccel = onFloor ? _acceleration : _acceleration * _airControl;

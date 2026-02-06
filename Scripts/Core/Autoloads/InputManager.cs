@@ -24,6 +24,7 @@ public partial class InputManager : Node
     [Signal] public delegate void JumpPressedEventHandler();
     [Signal] public delegate void ScarePressedEventHandler();
     [Signal] public delegate void InteractPressedEventHandler();
+    [Signal] public delegate void SneakPressedEventHandler();
     [Signal] public delegate void PausePressedEventHandler();
 
     public override void _Ready()
@@ -61,6 +62,11 @@ public partial class InputManager : Node
         if (@event.IsActionPressed("interact"))
         {
             EmitSignal(SignalName.InteractPressed);
+        }
+
+        if (@event.IsActionPressed("sneak"))
+        {
+            EmitSignal(SignalName.SneakPressed);
         }
     }
 
@@ -118,6 +124,7 @@ public partial class InputManager : Node
     public bool IsInteractJustPressed() => Input.IsActionJustPressed("interact");
     public bool IsPauseJustPressed() => Input.IsActionJustPressed("pause");
     public bool IsSprintPressed() => Input.IsActionPressed("sprint");
+    public bool IsSneakJustPressed() => Input.IsActionJustPressed("sneak");
 
     // Zoom input
     public bool IsZoomInJustPressed() => Input.IsActionJustPressed("zoom_in");
